@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
 
-function App() {
+import RecipeForm from "./RecipeForm";
+import Logo from "./Logo";
+import RecipeList from "./RecipeList";
+import Stats from "./Stats";
+
+export default function App() {
+  const [recipes, setRecipes] = useState([]);
+
+  function handleClearList() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all recipes?"
+    );
+    if (confirmed) setRecipes([]);
+  }
+
+  function handleAddRecipe(recipe) {
+    setRecipes((recipes) => [...recipes, recipe]);
+  }
+
+  function handleDeleteRecipe(id) {
+    setRecipes((recipes) => recipes.filter((recipe) => recipe.id !== id));
+  }
+
+  function handleToggleFavorite(id) {
+    setRecipes((recipes) =>
+      recipes.map((recipe) =>
+        recipe.id === id ? { ...recipe, favorite: !recipe.favorite } : recipe
+      )
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <Logo />
+      <RecipeForm onAddRecipe={handleAddRecipe} />
+      <RecipeList
+        recipes={recipes}
+        onDeleteRecipe={handleDeleteRecipe}
+        onToggleFavorite={handleToggleFavorite}
+        onClearList={handleClearList}
+      />
+      <Stats recipes={recipes} />
     </div>
   );
 }
-
-export default App;
